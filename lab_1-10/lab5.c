@@ -284,7 +284,7 @@ int main(int argc, char *argv[])
 {
     double epsilon;
     double x;
-    double value;
+    double value = 0.0;
     Status status;
 
     if (argc != 2 && argc != 3)
@@ -321,16 +321,24 @@ int main(int argc, char *argv[])
     }
 
     printf("Точность epsilon = %.12g, x = %.12g\n\n", epsilon, x);
-    print_sum("a", sum_a(x, epsilon, &value), value);
-    print_sum("b", sum_b(x, epsilon, &value), value);
-    print_sum("c", sum_c(x, epsilon, &value), value);
-    print_sum("d", sum_d(x, epsilon, &value), value);
+    status = sum_a(x, epsilon, &value);
+    print_sum("a", status, value);
+    status = sum_b(x, epsilon, &value);
+    print_sum("b", status, value);
+    status = sum_c(x, epsilon, &value);
+    print_sum("c", status, value);
+    status = sum_d(x, epsilon, &value);
+    print_sum("d", status, value);
 
     printf("\nИнтегралы на отрезке [0; 1]:\n");
-    print_integral("a", calculate_integral(integral_a_function, epsilon, &value), value);
-    print_integral("b", calculate_integral(integral_b_function, epsilon, &value), value);
-    print_integral("c", calculate_integral(integral_c_function, epsilon, &value), value);
-    print_integral("d", calculate_integral(integral_d_function, epsilon, &value), value);
+    status = calculate_integral(integral_a_function, epsilon, &value);
+    print_integral("a", status, value);
+    status = calculate_integral(integral_b_function, epsilon, &value);
+    print_integral("b", status, value);
+    status = calculate_integral(integral_c_function, epsilon, &value);
+    print_integral("c", status, value);
+    status = calculate_integral(integral_d_function, epsilon, &value);
+    print_integral("d", status, value);
 
     return STATUS_OK;
 }

@@ -50,6 +50,9 @@ static Status bigint_reserve(BigInt *number, size_t needed) {
         }
         new_capacity *= 2;
     }
+    if (new_capacity > SIZE_MAX / sizeof(*new_part)) {
+        return MEMORY_ERROR;
+    }
     new_part = realloc(number->part, new_capacity * sizeof(*new_part));
     if (new_part == NULL) {
         return MEMORY_ERROR;
@@ -334,7 +337,7 @@ static Status bigint_to_string(const BigInt *number, int base, char **text) {
     } else {
         while (temporary.size > 0) {
             unsigned int remainder = bigint_divide_small(&temporary, (unsigned int)base);
-            if (length + 2 > capacity) {
+            if (length + 3 > capacity) {
                 char *new_result;
                 capacity *= 2;
                 new_result = realloc(result, capacity);

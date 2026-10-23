@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 
 typedef enum
 {
@@ -196,6 +197,8 @@ int main(int argc, char *argv[])
     FILE *input;
     FILE *output;
     Status status;
+    struct stat input_info;
+    struct stat output_info;
     if (argc < 3)
     {
         printf("Ошибка: недостаточно аргументов.\n");
@@ -209,21 +212,21 @@ int main(int argc, char *argv[])
     if (argv[1][1] == 'n')
     {
         has_output_name = 1;
-        action = argv[1][2];
-        if (argv[1][3] != '\0' || argc != 4)
+        if (strlen(argv[1]) != 3 || argc != 4)
         {
             printf("Ошибка: для флага с n нужны входной и выходной файлы.\n");
             return 1;
         }
+        action = argv[1][2];
     }
     else
     {
-        action = argv[1][1];
-        if (argv[1][2] != '\0' || argc != 3)
+        if (strlen(argv[1]) != 2 || argc != 3)
         {
             printf("Ошибка: неверное количество аргументов или формат флага.\n");
             return 1;
         }
+        action = argv[1][1];
     }
     if (action != 'd' && action != 'i' && action != 's' && action != 'a')
     {
@@ -245,7 +248,10 @@ int main(int argc, char *argv[])
         }
         output_name = generated_name;
     }
-    if (strcmp(input_name, output_name) == 0)
+    /* Different paths and links can refer to the same existing file. */
+    if (strcmp(input_name, output_name) == 0 ||
+        (stat(input_name, &input_info) == 0 && stat(output_name, &output_info) == 0 &&
+         input_info.st_dev == output_info.st_dev && input_info.st_ino == output_info.st_ino))
     {
         printf("Ошибка: входной и выходной файлы не должны совпадать.\n");
         free(generated_name);

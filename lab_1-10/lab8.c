@@ -1,5 +1,7 @@
 #include <ctype.h>
 #include <stdio.h>
+#include <stdint.h>
+#include <sys/stat.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -76,6 +78,10 @@ static Status multiply_and_add(BigNumber *number, unsigned int multiplier, unsig
             size_t new_capacity = number->capacity * 2;
             unsigned int *new_digits;
 
+            if (number->capacity > SIZE_MAX / 2 / sizeof(unsigned int))
+            {
+                return STATUS_MEMORY_ERROR;
+            }
             new_digits = realloc(number->digits, new_capacity * sizeof(unsigned int));
             if (new_digits == NULL)
             {
@@ -148,6 +154,11 @@ static Status read_word(FILE *file, char **word)
         if (length + 1 >= capacity)
         {
             char *new_text;
+            if (capacity > SIZE_MAX / 2)
+            {
+                free(text);
+                return STATUS_MEMORY_ERROR;
+            }
             capacity *= 2;
             new_text = realloc(text, capacity);
             if (new_text == NULL)
@@ -160,6 +171,11 @@ static Status read_word(FILE *file, char **word)
         text[length] = (char)symbol;
         length++;
         symbol = fgetc(file);
+    }
+    if (ferror(file))
+    {
+        free(text);
+        return STATUS_OPEN_ERROR;
     }
     text[length] = '\0';
     *word = text;
@@ -284,6 +300,15 @@ static void print_error(Status status, const char *word)
     }
 }
 
+static int same_file(const char *first, const char *second)
+{
+    struct stat first_info;
+    struct stat second_info;
+    return strcmp(first, second) == 0 ||
+           (stat(first, &first_info) == 0 && stat(second, &second_info) == 0 &&
+            first_info.st_dev == second_info.st_dev && first_info.st_ino == second_info.st_ino);
+}
+
 int main(int argc, char *argv[])
 {
     FILE *input;
@@ -302,7 +327,7 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Ошибка: не удалось открыть входной файл.\n");
         return STATUS_OPEN_ERROR;
     }
-    output = fopen(argv[2], "w");
+    output = same_file(argv[1], argv[2]) ? NULL : fopen(argv[2], "w");
     if (output == NULL)
     {
         fclose(input);
@@ -322,11 +347,11 @@ int main(int argc, char *argv[])
                 print_error(status, word);
             }
         }
-        free(word);
         if (word == NULL)
         {
             break;
         }
+        free(word);
     }
 
     if (fclose(input) != 0 && status == STATUS_OK)

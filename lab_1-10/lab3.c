@@ -237,8 +237,8 @@ int main(int argc, char *argv[])
     long long first_number;
     long long second_number;
 
-    if (argc < 2 || argv[1][0] == '\0' ||
-        (argv[1][0] != '-' && argv[1][0] != '/') || argv[1][2] != '\0')
+    if (argc < 2 || strlen(argv[1]) != 2 ||
+        (argv[1][0] != '-' && argv[1][0] != '/'))
     {
         printf("Ошибка: введен неверный флаг.\n");
         return 1;

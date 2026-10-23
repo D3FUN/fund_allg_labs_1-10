@@ -23,11 +23,11 @@ static Status find_root_bisection(Function function, double left, double right, 
     if (!isfinite(left_value) || !isfinite(right_value)) {
         return STATUS_INVALID_ARGUMENT;
     }
-    if (fabs(left_value) < epsilon) 
+    if (left_value == 0.0)
     {
         *result = left; return STATUS_OK; 
     }
-    if (fabs(right_value) < epsilon) {
+    if (right_value == 0.0) {
         *result = right; return STATUS_OK; 
     }
     if ((left_value < 0.0 && right_value < 0.0) ||
@@ -37,10 +37,13 @@ static Status find_root_bisection(Function function, double left, double right, 
     while (right - left >= epsilon && iteration < MAX_ITERATIONS) {
         double middle = left + (right - left) / 2.0;
         double middle_value = function(middle);
+        if (middle == left || middle == right) {
+            return STATUS_NO_CONVERGENCE;
+        }
         if (!isfinite(middle_value)) {
             return STATUS_INVALID_ARGUMENT;
         }
-        if (fabs(middle_value) < epsilon) {
+        if (middle_value == 0.0) {
             *result = middle; return STATUS_OK; 
         }
         if ((left_value < 0.0 && middle_value < 0.0) ||
@@ -179,7 +182,8 @@ static Status calculate_sqrt2_series(double epsilon, double *result)
     if (result == NULL || epsilon <= 0.0 || !isfinite(epsilon)) {
         return STATUS_INVALID_ARGUMENT;
     }
-    for (k = 2; fabs(factor - 1.0) >= epsilon / 2.0 && k < 1075; k++) {
+    /* The remaining product is factor squared; epsilon / 4 bounds its tail. */
+    for (k = 2; fabs(factor - 1.0) >= epsilon / 4.0 && k < 1075; k++) {
         product *= factor; 
         factor = sqrt(factor); 
     }

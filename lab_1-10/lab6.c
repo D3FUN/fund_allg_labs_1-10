@@ -12,7 +12,8 @@ typedef enum
     STATUS_INVALID_ARGUMENT,
     STATUS_NOT_CONVEX,
     STATUS_NO_ROOT,
-    STATUS_OVERFLOW
+    STATUS_OVERFLOW,
+    STATUS_NO_CONVERGENCE
 } Status;
 
 typedef double (*Function)(double);
@@ -330,7 +331,12 @@ static Status bisection(Function function, double left, double right, double eps
     while (right - left > epsilon)
     {
         double middle = left + (right - left) / 2.0;
-        double middle_value = function(middle);
+        double middle_value;
+        if (middle == left || middle == right)
+        {
+            return STATUS_NO_CONVERGENCE;
+        }
+        middle_value = function(middle);
         if (!isfinite(middle_value))
         {
             return STATUS_INVALID_ARGUMENT;

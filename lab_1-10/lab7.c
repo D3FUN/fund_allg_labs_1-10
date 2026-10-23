@@ -1,5 +1,7 @@
 #include <ctype.h>
 #include <stdio.h>
+#include <stdint.h>
+#include <sys/stat.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -35,7 +37,7 @@ static Status read_word(FILE *file, char **word, int *end_of_file)
     if (symbol == EOF)
     {
         *end_of_file = 1;
-        return STATUS_OK;
+        return ferror(file) ? STATUS_OPEN_ERROR : STATUS_OK;
     }
 
     text = malloc(capacity);
@@ -49,6 +51,11 @@ static Status read_word(FILE *file, char **word, int *end_of_file)
         if (length + 1 >= capacity)
         {
             char *new_text;
+            if (capacity > SIZE_MAX / 2)
+            {
+                free(text);
+                return STATUS_MEMORY_ERROR;
+            }
             capacity *= 2;
             new_text = realloc(text, capacity);
             if (new_text == NULL)
@@ -61,6 +68,11 @@ static Status read_word(FILE *file, char **word, int *end_of_file)
         text[length] = (char)symbol;
         length++;
         symbol = fgetc(file);
+    }
+    if (ferror(file))
+    {
+        free(text);
+        return STATUS_OPEN_ERROR;
     }
     text[length] = '\0';
     *word = text;
@@ -251,6 +263,15 @@ static void print_error(Status status)
     }
 }
 
+static int same_file(const char *first, const char *second)
+{
+    struct stat first_info;
+    struct stat second_info;
+    return strcmp(first, second) == 0 ||
+           (stat(first, &first_info) == 0 && stat(second, &second_info) == 0 &&
+            first_info.st_dev == second_info.st_dev && first_info.st_ino == second_info.st_ino);
+}
+
 int main(int argc, char *argv[])
 {
     FILE *first_file;
@@ -268,7 +289,12 @@ int main(int argc, char *argv[])
     {
         first_file = fopen(argv[2], "r");
         second_file = fopen(argv[3], "r");
-        result_file = fopen(argv[4], "w");
+        result_file = NULL;
+        if (first_file != NULL && second_file != NULL &&
+            !same_file(argv[2], argv[4]) && !same_file(argv[3], argv[4]))
+        {
+            result_file = fopen(argv[4], "w");
+        }
         if (first_file == NULL || second_file == NULL || result_file == NULL)
         {
             if (first_file != NULL)
@@ -297,7 +323,11 @@ int main(int argc, char *argv[])
     else if ((strcmp(argv[1], "-a") == 0 || strcmp(argv[1], "/a") == 0) && argc == 4)
     {
         first_file = fopen(argv[2], "r");
-        result_file = fopen(argv[3], "w");
+        result_file = NULL;
+        if (first_file != NULL && !same_file(argv[2], argv[3]))
+        {
+            result_file = fopen(argv[3], "w");
+        }
         if (first_file == NULL || result_file == NULL)
         {
             if (first_file != NULL)
