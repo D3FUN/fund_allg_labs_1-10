@@ -10,7 +10,7 @@ make lab13
 
 ## Корректные тесты
 
-Готовый файл `examples/search.txt` содержит четыре строки; в третьей между `y` и `x` стоит табуляция:
+Готовый файл `lab13.txt` содержит четыре строки; в третьей между `y` и `x` стоит табуляция:
 
 ```text
 aaaa
@@ -22,7 +22,7 @@ y
 Ввести:
 
 ```sh
-./lab13 aa examples/search.txt
+./lab13 aa lab13.txt
 ```
 
 Будут найдены совпадения: строка 1, символы 1, 2 и 3.
@@ -30,19 +30,19 @@ y
 Поиск сразу в двух файлах:
 
 ```sh
-./lab13 aa examples/search.txt examples/employees.txt
+./lab13 aa lab13.txt lab13_2.txt
 ```
 
 Поиск через перенос строки (команда передаёт настоящий перенос):
 
 ```sh
-./lab13 "$(printf 'x\ny')" examples/search.txt
+./lab13 "$(printf 'x\ny')" lab13.txt
 ```
 
 Совпадения: строка 2, символ 1 и строка 3, символ 3. Символы считаются по байтам с 1, табуляция занимает одну позицию.
 
 ```sh
-./lab13 not_found examples/search.txt
+./lab13 not_found lab13.txt
 ```
 
 Ожидается сообщение, что вхождений нет.
@@ -51,6 +51,6 @@ y
 
 ```sh
 ./lab13 aa missing_file.txt
-./lab13 '' examples/search.txt
+./lab13 '' lab13.txt
 ./lab13
 ```

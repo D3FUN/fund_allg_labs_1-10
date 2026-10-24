@@ -10,7 +10,7 @@ make lab12
 
 ## Корректные тесты
 
-Готовый входной файл `examples/employees.txt` содержит:
+Готовый входной файл `lab12.txt` содержит:
 
 ```text
 8 Bob Smith 10
@@ -23,7 +23,7 @@ make lab12
 Ввести в терминале:
 
 ```sh
-./lab12 examples/employees.txt -a result.txt
+./lab12 lab12.txt -a result.txt
 cat result.txt
 ```
 
@@ -40,7 +40,7 @@ cat result.txt
 По убыванию:
 
 ```sh
-./lab12 examples/employees.txt /d result.txt
+./lab12 lab12.txt /d result.txt
 cat result.txt
 ```
 
@@ -50,8 +50,8 @@ cat result.txt
 
 ```sh
 ./lab12 missing_file.txt -a result.txt
-./lab12 examples/employees.txt -z result.txt
-./lab12 examples/employees.txt -a examples/employees.txt
+./lab12 lab12.txt -z result.txt
+./lab12 lab12.txt -a lab12.txt
 ```
 
 Должна появиться ошибка; входной файл нельзя использовать как выходной.

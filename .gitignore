@@ -5,3 +5,5 @@ docker-compose.yaml
 compose.yml
 compose.yaml
 .docker/
+*.md
+*.txt
