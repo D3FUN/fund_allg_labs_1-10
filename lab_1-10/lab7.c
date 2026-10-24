@@ -195,7 +195,7 @@ static Status write_changed_word(FILE *file, const char *word, long word_number,
     for (i = 0; word[i] != '\0'; i++)
     {
         unsigned char symbol = (unsigned char)word[i];
-        if ((word_number % 2 == 0 || word_number % 10 != 0) &&
+        if ((word_number % 2 == 0 && word_number % 10 != 0) &&
             symbol >= 'A' && symbol <= 'Z')
         {
             symbol = (unsigned char)tolower(symbol);
