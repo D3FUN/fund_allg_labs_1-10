@@ -1,7 +1,3 @@
-ЛАБОРАТОРНАЯ 4
-Файл можно указать как входной: ./lab4 -d tests/lab4_tests.txt
-Либо: ./lab4 -ni tests/lab4_tests.txt result.txt
-
 КОРРЕКТНЫЕ ДАННЫЕ
 Hello123 world!
 Строка 42: AbCd, 987.
