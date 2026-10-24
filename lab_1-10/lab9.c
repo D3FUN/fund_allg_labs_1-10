@@ -262,7 +262,6 @@ int main(int argc, char *argv[])
         fixed_array[i] = random_in_range(left, right);
     }
 
-    printf("Первая часть лабораторной работы.\n");
     print_array("Исходный массив", fixed_array, FIXED_ARRAY_SIZE);
     status = swap_min_and_max(fixed_array, FIXED_ARRAY_SIZE, &min_value, &max_value);
     if (status != STATUS_OK)
@@ -293,7 +292,6 @@ int main(int argc, char *argv[])
         return status;
     }
 
-    printf("\nВторая часть лабораторной работы.\n");
     printf("Размер массива A: %zu, размер массива B: %zu.\n", size_a, size_b);
     printf("Массив C создан: C[i] = A[i] + ближайший по значению элемент B.\n");
     printf("Первые элементы массива C: ");
