@@ -93,7 +93,7 @@ static int random_in_range(int left, int right)
     unsigned long long count;
 
     count = (unsigned long long)((long long)right - (long long)left + 1);
-    return left + (int)((unsigned long long)rand() % count);
+    return left + (int)((unsigned long long)rand() % count); //равномерное распределение
 }
 
 static void print_array(const char *name, const int *array, size_t size)
